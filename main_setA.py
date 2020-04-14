@@ -7,6 +7,17 @@ sys.path.insert(0,'Solvers/')
 import reader as rd 
 import exact_solvers as es 
 
+def show_instance_details(instance_path):
+
+  reader = rd.Reader()
+  instance = reader.read_instance(instance_path)
+  instance.show_basic_details()
+  #instance.show_interventions_details()
+  #instance.show_resources_details()
+  #instance.show_r_c_i_t_t1_details()
+  #instance.show_risks_details()
+  #instance.show_exclusions_details()
+  return 
 
 def set_A_instances_resolution(instance_path,instance_number):
 
@@ -49,4 +60,5 @@ def set_A_instances_resolution(instance_path,instance_number):
 if __name__ =="__main__":
   
   instance_path = 'Instances/Set_A/A_09.json'
-  set_A_instances_resolution(instance_path,'09')
+  #set_A_instances_resolution(instance_path,'09')
+  show_instance_details(instance_path)

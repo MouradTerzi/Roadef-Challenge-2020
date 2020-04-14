@@ -11,7 +11,7 @@ def show_instance_details(instance_path):
 
   reader = rd.Reader()
   instance = reader.read_instance(instance_path)
-  instance.show_basic_details()
+  #instance.show_basic_details()
   #instance.show_interventions_details()
   #instance.show_resources_details()
   #instance.show_r_c_i_t_t1_details()
@@ -40,7 +40,7 @@ def set_A_instances_resolution(instance_path,instance_number):
   exclusions_list = instance.exclusions
   r_c_i_t_t1 = instance.r_c_i_t_t1
   risk_s_i_t_t1 = instance.risk_s_i_t_t1
-  M = 10
+  M = 1000000
   model_path = 'Output_models/setA_instance_'+instance_number+'.lp'
   list_beta_indexes = list()
   for i in range(interventions_number):
@@ -51,7 +51,7 @@ def set_A_instances_resolution(instance_path,instance_number):
   exact_solver = es.ExactSolvers()
   #Create the mathematical model 
   model = exact_solver.create_mathematical_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
-  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,model_path)
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,M,model_path)
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
   return 0
@@ -59,6 +59,6 @@ def set_A_instances_resolution(instance_path,instance_number):
 
 if __name__ =="__main__":
   
-  instance_path = 'Instances/Set_A/A_09.json'
-  #set_A_instances_resolution(instance_path,'09')
+  instance_path = 'Instances/Set_A/A_07.json'
+  set_A_instances_resolution(instance_path,'09')
   show_instance_details(instance_path)

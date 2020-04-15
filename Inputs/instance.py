@@ -12,6 +12,7 @@ class Instance:
     self.alpha = alpha
     self.tau = tau 
     self.completion_time = completion_time
+    self.t_max = list()
     self.delta_i_t = list()  #Processing times of each intervention in each time period
     self.l_c_t = list()  #Lower capacities of each resource in each time period
     self.u_c_t = list()  #Higher capacities of each resource in each time period 

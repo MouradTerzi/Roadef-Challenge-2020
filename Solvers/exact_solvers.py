@@ -7,7 +7,7 @@ class ExactSolvers:
     print("ExactSolvers class instantiation ....")
   
   def create_mathematical_model(self,interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
-  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,M,model_path):
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,M,model_path,t_max):
    
    #1. Creation of the model
    model = Model('Roadef challenge')
@@ -27,26 +27,29 @@ class ExactSolvers:
    model.addConstrs((w[i, t] >= z[i, t] for i in range(interventions_number) for t in range(horizon)))
    model.addConstrs((z[i, t]*(t + delta_i_t[i][t]) <= horizon for i in range(interventions_number) \
    for t in range(horizon)))
-
+   
+   #Contraist related to t_max 
+   model.addConstrs((z[i,t]*(t + 1) <= t_max[i] + 1 for i in range(interventions_number) for t in range(horizon)))
+   
    model.addConstrs((w[key[0],t] + w[key[1],t] <= 1 for key in exclusions_list.keys() for t in exclusions_list[key]))
    
    model.addConstrs((beta[i,t,t1] >= z[i,t1]+ w[i,t] - 1 for i in range(interventions_number) \
    for t in range(horizon) for t1 in range(t + 1)))
-
+   
    model.addConstrs((quicksum(beta[i,t,t1]*r_c_i_t_t1[(i,res)][t][t1] for i in range(interventions_number) \
    for t1 in range(t+1) if (i,res) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,res)] \
    and t1 in r_c_i_t_t1[(i,res)][t]) >= l_c_t[res][t] \
    for res in range(resources_number) for t in range(horizon)))
-
+   
    model.addConstrs((quicksum(beta[i,t,t1]*r_c_i_t_t1[(i,res)][t][t1] for i in range(interventions_number) \
    for t1 in range(t+1) if (i,res) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,res)] \
    and t1 in r_c_i_t_t1[(i,res)][t]) <= u_c_t[res][t] \
    for res in range(resources_number) for t in range(horizon)))
-
+   
    model.addConstrs((risk_s_t[s,t] == quicksum(risk_s_i_t_t1[i][t][t1][s]*beta[i,t,t1] for i in
-   range(interventions_number) for t1 in range(t+1) if t1 in risk_s_i_t_t1[i][t]) \
+   range(interventions_number) for t1 in range(t+1) if t <=t_max[i] and t1 in risk_s_i_t_t1[i][t]) \
    for t in range(horizon) for s in range(scenarios[t])))
-
+   
    model.addConstrs((risk_bar_t[t] == quicksum(risk_s_t[s,t] for s in
    range(scenarios[t]))*(1/scenarios[t]) for t in range(horizon)))
    
@@ -69,7 +72,7 @@ class ExactSolvers:
    obj = alpha*quicksum(risk_bar_t[t] for t in range(horizon))*(1/horizon) + \
    (1 - alpha)*(quicksum(excess[t] for t in range(horizon))*(1/horizon))
    model.setObjective(obj,GRB.MINIMIZE)
-
+   
    # 5. Save the model 
    model.write(model_path)
 

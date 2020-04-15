@@ -60,11 +60,11 @@ def example_one_resolution():
         2: {0:[0,0,0], 1:[0,0,0]}  #t = 2, (t' =0 and t' = 1)
     }
   }
-
+  t_max = [2,2,2]
   exact_solver = es.ExactSolvers()
   #Create the matematical model
   model = exact_solver.create_mathematical_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
-  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Output_models/example_1.lp')
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Output_models/example_1.lp',t_max)
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
   return 0
@@ -125,11 +125,11 @@ def example_two_resolution():
         2: {0:[0,0], 1:[0,0]}  #t = 2, (t' =0 and t' = 1), two scenarios
     }
   }
-  
+  t_max = [2,2,2]
   exact_solver = es.ExactSolvers()
   #Create the mathematical model 
   model = exact_solver.create_mathematical_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
-  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Output_models/example_2.lp')
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Output_models/example_2.lp',t_max)
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
 

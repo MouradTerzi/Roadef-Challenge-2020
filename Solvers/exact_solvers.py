@@ -112,12 +112,31 @@ class ExactSolvers:
             f.write("Intervention_"+str(int_json_number)+" "+str(t+1)+"\n")
     
     except AttributeError:
-      print("Specefied attribute doses't existe")
+      print("Specefied attribute dosesn't existe")
 
     f.close()
     return 0
     
+  def show_w_values(self,mathematical_model,interventions_number,horizon,interventions_real_number,output_path):
     
+    f = open(output_path,"w")
+    try:
+      for i in range(interventions_number):
+        for t in range(horizon):
+          w = mathematical_model.getVarByName("w["+str(i)+","+str(t)+"]")
+          if w.X != 0:
+            int_json_number = interventions_real_number[i]
+            print(w.Varname,w.X) #Show the details of the corresponding w
+            print("Intervention number in the json file :",int_json_number)
+            print("    ")
+            f.write("w["+str(i)+","+str(t)+"] = 1 Intervention in json = "+str(int_json_number)+"\n")
+      
+      f.close()
+      return 0
+
+    except AttributeError:
+      print("Specefied attribute dosesn't existe")
+
 
 
 

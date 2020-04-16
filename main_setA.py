@@ -19,14 +19,14 @@ def show_instance_details(instance_path):
   #instance.show_risks_details()
   #instance.show_exclusions_details()
   return 
-
+  
 def set_A_instances_resolution(instance_path,instance_number):
 
   #instance_path is the path to the considering instance
   #the Set 1 instances are in the folder Instances/SetA/
   reader = rd.Reader()
   instance = reader.read_instance(instance_path)
-
+  
   #1. Declaration of the initial informations about the instance
   interventions_number = instance.interventions_number
   resources_number = instance.resources_number
@@ -34,7 +34,7 @@ def set_A_instances_resolution(instance_path,instance_number):
   scenarios = copy.deepcopy(instance.scenarios_number)
   alpha = instance.alpha
   tau = instance.tau
-  completion_time = instance.completion_time
+  computation_time = instance.computation_time
   delta_i_t = copy.deepcopy(instance.delta_i_t)
   l_c_t = copy.deepcopy(instance.l_c_t)
   u_c_t = copy.deepcopy(instance.u_c_t)
@@ -52,13 +52,18 @@ def set_A_instances_resolution(instance_path,instance_number):
   
   exact_solver = es.ExactSolvers()
   #Create the mathematical model 
-  model = exact_solver.create_mathematical_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
+  model = exact_solver.create_mathematical_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,computation_time, \
   delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,M,model_path,t_max)
+
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
+
+  #Create the output txt file 
+  output_path = 'Output_txt_files/SetA_'+instance_number+'_output_file'
+  exact_solver.output_file_creation(model,instance.interventions_real_number,output_path,interventions_number,horizon)
   return 0
 
-if __name__ =="__main__":
+if __name__ == "__main__":
   
   instance_path = 'Instances/Set_A/A_10.json'
   set_A_instances_resolution(instance_path,'10')

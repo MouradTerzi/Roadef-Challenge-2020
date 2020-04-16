@@ -37,8 +37,8 @@ def example_one_resolution():
   
   r_c_i_t_t1 = {
     (0,0): {0:{0:31},1:{0:0},2:{0:8}},
-    (1,0): {0:{0:14, 1: 0, 2: 0},1:{0:0, 1:14, 2:0},2:{0:0, 1:0, 2:14}},
-    (2,0): {0:{0:5, 1:0},1:{0:0, 1:5}, 2:{0:0 , 1:0}}
+    (1,0): {0:{0:14},1:{0:0, 1:14},2:{0:0, 1:0, 2:14}},
+    (2,0): {0:{0:5},1:{0:0, 1:5}, 2:{0:0 , 1:0}}
   }
 
   risk_s_i_t_t1 = {
@@ -67,6 +67,9 @@ def example_one_resolution():
   delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Output_models/example_1.lp',t_max)
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
+  #Create the output txt file
+  output_path = 'Output_txt_files/example_1'
+  exact_solver.output_file_creation(model,[1,2,3],output_path,interventions_number,horizon)
   return 0
 
 
@@ -132,7 +135,8 @@ def example_two_resolution():
   delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Output_models/example_2.lp',t_max)
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
-
+  output_path = 'Output_txt_files/example_2'
+  exact_solver.output_file_creation(model,[1,2,3],output_path,interventions_number,horizon)
   return 0
 
 

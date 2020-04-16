@@ -4,14 +4,14 @@ import sys
 
 class Instance:
    
-  def __init__(self,horizon,resources_number,interventions_number,scenarios_number,alpha,tau,completion_time):
+  def __init__(self,horizon,resources_number,interventions_number,scenarios_number,alpha,tau,computation_time):
     self.horizon = horizon
     self.resources_number = resources_number  #Total of resouces number 
     self.interventions_number = interventions_number  #Total number of interventions 
     self.scenarios_number = scenarios_number   #Total of scenario number 
     self.alpha = alpha
     self.tau = tau 
-    self.completion_time = completion_time
+    self.computation_time = computation_time
     self.t_max = list()
     self.delta_i_t = list()  #Processing times of each intervention in each time period
     self.l_c_t = list()  #Lower capacities of each resource in each time period
@@ -43,7 +43,7 @@ class Instance:
     print("scenarios_number : ",self.scenarios_number)
     print("alpha :",self.alpha)
     print("tau :",self.tau)
-    print("completion time :",self.completion_time)
+    print("computation time :",self.computation_time)
     return 0
 
   
@@ -118,6 +118,7 @@ class Instance:
     print("              ##################################################################################################################")
     print("               ")
     for key in self.exclusions.keys():
+      print(key)
       int_1_number = self.interventions_real_number[key[0]]
       int_2_number = self.interventions_real_number[key[1]] 
       print("                 &&&&&&&&&&&&&&&&&    [Intervention 1, Intervention 2] = [",int_1_number,",",int_2_number,"] &&&&&&&&&&&&&&&&&&&&&&")

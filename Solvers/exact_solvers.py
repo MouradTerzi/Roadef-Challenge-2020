@@ -6,7 +6,7 @@ class ExactSolvers:
   def __init__(self):
     print("ExactSolvers class instantiation ....")
   
-  def create_mathematical_model(self,interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
+  def create_mathematical_model(self,interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,computation_time, \
   delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,M,model_path,t_max):
    
    #1. Creation of the model
@@ -23,6 +23,7 @@ class ExactSolvers:
    excess = model.addVars(horizon,vtype = GRB.CONTINUOUS, name = "excess")
    
    #3. Add constraints
+   
    model.addConstrs((quicksum(z[i,t] for t in range(horizon)) == 1 for i in range(interventions_number)))
    model.addConstrs((w[i, t] >= z[i, t] for i in range(interventions_number) for t in range(horizon)))
    model.addConstrs((z[i, t]*(t + delta_i_t[i][t]) <= horizon for i in range(interventions_number) \
@@ -37,17 +38,16 @@ class ExactSolvers:
    for t in range(horizon) for t1 in range(t + 1)))
    
    model.addConstrs((quicksum(beta[i,t,t1]*r_c_i_t_t1[(i,res)][t][t1] for i in range(interventions_number) \
-   for t1 in range(t+1) if (i,res) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,res)] \
-   and t1 in r_c_i_t_t1[(i,res)][t]) >= l_c_t[res][t] \
-   for res in range(resources_number) for t in range(horizon)))
+   for t1 in range(t + 1) if (i,res) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,res)] 
+   and t1 in r_c_i_t_t1[(i,res)][t]) >= l_c_t[res][t] for res in range(resources_number) for t in range(horizon)))
    
    model.addConstrs((quicksum(beta[i,t,t1]*r_c_i_t_t1[(i,res)][t][t1] for i in range(interventions_number) \
-   for t1 in range(t+1) if (i,res) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,res)] \
+   for t1 in range(t + 1) if (i,res) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,res)] \
    and t1 in r_c_i_t_t1[(i,res)][t]) <= u_c_t[res][t] \
    for res in range(resources_number) for t in range(horizon)))
    
    model.addConstrs((risk_s_t[s,t] == quicksum(risk_s_i_t_t1[i][t][t1][s]*beta[i,t,t1] for i in
-   range(interventions_number) for t1 in range(t+1) if t <=t_max[i] and t1 in risk_s_i_t_t1[i][t]) \
+   range(interventions_number) for t1 in range(t + 1) if t in risk_s_i_t_t1[i] and t1 in risk_s_i_t_t1[i][t]) \
    for t in range(horizon) for s in range(scenarios[t])))
    
    model.addConstrs((risk_bar_t[t] == quicksum(risk_s_t[s,t] for s in
@@ -67,25 +67,57 @@ class ExactSolvers:
 
    model.addConstrs((quicksum(w[i,t1] for t1 in range(t, horizon)) >= z[i,t]*(delta_i_t[i][t]) for i in range(interventions_number) \
    for t in range(horizon)))
-
+    
    # 4. Fix the objective
    obj = alpha*quicksum(risk_bar_t[t] for t in range(horizon))*(1/horizon) + \
    (1 - alpha)*(quicksum(excess[t] for t in range(horizon))*(1/horizon))
+
    model.setObjective(obj,GRB.MINIMIZE)
    
-   # 5. Save the model 
+   #5. Upadate the timelimit value according to the input computation time
+   #computation time is specified in minutes
+   #timelimit parameter of the model is specified in seconds
+   model.Params.timelimit = computation_time*60
+
+   # 6. Save the model 
    model.write(model_path)
 
    return model 
 
   def instance_resolution(self,mathematical_model): 
-    #7. Call the optimizer algorithm
+    
+    #Call the optimizer algorithm
     mathematical_model.optimize()
     """
-    for v in mathematical_model.getVars():
-      if v.X != 0:
-        print("%s %f" % (v.Varname, v.X))
+    try:
+      for v in mathematical_model.getVars():
+        if v.X != 0:
+          print("%s %f" % (v.Varname, v.X))
+      return 0
+
+    except : 
+      print("Instance resolution failed !!!")
+      return -1
     """
+  
+  def output_file_creation(self,mathematical_model,interventions_real_number,output_path,interventions_number,horizon):
+    
+    f = open(output_path,"w")
+    try:
+      for i in range(interventions_number):
+        for t in range(horizon):
+          z = mathematical_model.getVarByName("z["+str(i)+","+str(t)+"]")
+          if z.X != 0:
+            int_json_number = interventions_real_number[i]
+            f.write("Intervention_"+str(int_json_number)+" "+str(t+1)+"\n")
+    
+    except AttributeError:
+      print("Specefied attribute doses't existe")
+
+    f.close()
+    return 0
+    
+    
 
 
 

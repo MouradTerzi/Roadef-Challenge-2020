@@ -24,10 +24,10 @@ class Reader:
         scenarios_number = content['Scenarios_number']
         alpha = content['Alpha']
         tau = content['Quantile']
-        completion_time = content['ComputationTime']        
+        computation_time = content['ComputationTime']        
         
         #2. Create an object of type instance
-        instance = inst.Instance(horizon,resources_number,interventions_number,scenarios_number,alpha,tau,completion_time)
+        instance = inst.Instance(horizon,resources_number,interventions_number,scenarios_number,alpha,tau,computation_time)
         
         #2.1 Get the delta_i_t values
         self.__get_delta_i_t(content,instance)

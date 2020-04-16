@@ -28,7 +28,7 @@ class ExactSolvers:
    model.addConstrs((w[i, t] >= z[i, t] for i in range(interventions_number) for t in range(horizon)))
    model.addConstrs((z[i, t]*(t + delta_i_t[i][t]) <= horizon for i in range(interventions_number) \
    for t in range(horizon)))
-   model.addConstrs((w[i, t+1] <= 1+(w[i, t-1]-w[i,t])/2 for i in range(interventions_number) for t in range(1,horizon-1)))
+   model.addConstrs((w[i, t+1] <= 1+(w[i, t-1]-w[i,t]) for i in range(interventions_number) for t in range(1,horizon-1)))
    
    #Contraist related to t_max 
    model.addConstrs((z[i,t]*(t + 1) <= t_max[i] + 1 for i in range(interventions_number) for t in range(horizon)))

@@ -60,7 +60,7 @@ class Reader:
     if "Interventions" in content:
       for key in content["Interventions"].keys():
         instance.interventions_real_number.append(int(key[13:]))
-        instance.delta_i_t.append(content["Interventions"][key]["Delta"])
+        instance.delta_i_t.append(list(map(int,content["Interventions"][key]["Delta"])))
         instance.t_max.append(int(content["Interventions"][key]["tmax"])-1)
       
       return 0

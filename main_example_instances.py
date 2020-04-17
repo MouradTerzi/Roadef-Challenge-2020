@@ -60,7 +60,7 @@ def example_one_resolution():
         2: {0:[0,0,0], 1:[0,0,0]}  #t = 2, (t' =0 and t' = 1)
     }
   }
-  t_max = [2,2,2]
+  t_max = [0,2,1]
   exact_solver = es.ExactSolvers()
   #Create the matematical model
   model = exact_solver.create_mathematical_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
@@ -128,7 +128,7 @@ def example_two_resolution():
         2: {0:[0,0], 1:[0,0]}  #t = 2, (t' =0 and t' = 1), two scenarios
     }
   }
-  t_max = [2,2,2]
+  t_max = [0,2,1]
   exact_solver = es.ExactSolvers()
   #Create the mathematical model 
   model = exact_solver.create_mathematical_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \

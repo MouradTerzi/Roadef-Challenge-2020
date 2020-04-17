@@ -28,7 +28,6 @@ class ExactSolvers:
    model.addConstrs((w[i, t] >= z[i, t] for i in range(interventions_number) for t in range(horizon)))
    model.addConstrs((z[i, t]*(t + delta_i_t[i][t]) <= horizon for i in range(interventions_number) \
    for t in range(horizon)))
-   model.addConstrs((w[i, t+1] <= 1+(w[i, t-1]-w[i,t]) for i in range(interventions_number) for t in range(1,horizon-1)))
    
    #Contraist related to t_max 
    model.addConstrs((z[i,t]*(t + 1) <= t_max[i] + 1 for i in range(interventions_number) for t in range(horizon)))
@@ -66,9 +65,13 @@ class ExactSolvers:
    model.addConstrs(excess[t] >= 0 for t in range(horizon))
    model.addConstrs(excess[t] >= q_t[t] - risk_bar_t[t] for t in range(horizon))
 
-   model.addConstrs((quicksum(w[i,t1] for t1 in range(t, horizon)) >= z[i,t]*(delta_i_t[i][t]) for i in range(interventions_number) \
-   for t in range(horizon)))
+   model.addConstrs((quicksum(w[i,t1] for t1 in range(t, t + delta_i_t[i][t])) >= z[i,t]*(delta_i_t[i][t]) for i in range(interventions_number) \
+   for t in range(t_max[i] + 1)))
+
+   model.addConstrs((quicksum(w[i,t1] for t1 in range(horizon)) == quicksum(z[i,t]*delta_i_t[i][t] for t in range(t_max[i] + 1)) 
+   for i in range(interventions_number)))
     
+   
    # 4. Fix the objective
    obj = alpha*quicksum(risk_bar_t[t] for t in range(horizon))*(1/horizon) + \
    (1 - alpha)*(quicksum(excess[t] for t in range(horizon))*(1/horizon))

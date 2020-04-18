@@ -24,10 +24,11 @@ class ExactSolvers:
    
    #3. Add constraints
    
-   model.addConstrs((quicksum(z[i,t] for t in range(horizon)) == 1 for i in range(interventions_number)))
+   model.addConstrs((quicksum(z[i,t] for t in range(t_max[i] + 1)) == 1 for i in range(interventions_number)))
+   model.addConstrs(z[i,t] == 0 for i in range(interventions_number) for t in range(t_max[i] + 1,horizon) )
    #model.addConstrs((w[i, t] >= z[i, t] for i in range(interventions_number) for t in range(horizon)))
    model.addConstrs((z[i, t]*(t + delta_i_t[i][t]) <= horizon for i in range(interventions_number) \
-   for t in range(horizon)))
+   for t in range(t_max[i],horizon)))
    
    model.addConstrs(w[i,t1]  >= z[i,t] for i in range(interventions_number) \
    for t in range(t_max[i] + 1) for t1 in range(t, t + delta_i_t[i][t]))

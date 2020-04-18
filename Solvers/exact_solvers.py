@@ -74,7 +74,6 @@ class ExactSolvers:
    #model.addConstrs((quicksum(w[i,t1] for t1 in range(horizon)) == quicksum(z[i,t]*delta_i_t[i][t] for t in range(t_max[i] + 1)) 
    #for i in range(interventions_number)))
     
-   
    # 4. Fix the objective
    obj = alpha*quicksum(risk_bar_t[t] for t in range(horizon))*(1/horizon) + \
    (1 - alpha)*(quicksum(excess[t] for t in range(horizon))*(1/horizon))

@@ -25,10 +25,12 @@ class ExactSolvers:
    #3. Add constraints
    
    model.addConstrs((quicksum(z[i,t] for t in range(horizon)) == 1 for i in range(interventions_number)))
-   model.addConstrs((w[i, t] >= z[i, t] for i in range(interventions_number) for t in range(horizon)))
+   #model.addConstrs((w[i, t] >= z[i, t] for i in range(interventions_number) for t in range(horizon)))
    model.addConstrs((z[i, t]*(t + delta_i_t[i][t]) <= horizon for i in range(interventions_number) \
    for t in range(horizon)))
    
+   model.addConstrs(w[i,t1]  >= z[i,t] for i in range(interventions_number) \
+   for t in range(t_max[i] + 1) for t1 in range(t, t + delta_i_t[i][t]))
    #Contraist related to t_max 
    model.addConstrs((z[i,t]*(t + 1) <= t_max[i] + 1 for i in range(interventions_number) for t in range(horizon)))
    
@@ -65,11 +67,11 @@ class ExactSolvers:
    model.addConstrs(excess[t] >= 0 for t in range(horizon))
    model.addConstrs(excess[t] >= q_t[t] - risk_bar_t[t] for t in range(horizon))
 
-   model.addConstrs((quicksum(w[i,t1] for t1 in range(t, t + delta_i_t[i][t])) >= z[i,t]*(delta_i_t[i][t]) for i in range(interventions_number) \
-   for t in range(t_max[i] + 1)))
+   #model.addConstrs((quicksum(w[i,t1] for t1 in range(t, t + delta_i_t[i][t])) >= z[i,t]*(delta_i_t[i][t]) for i in range(interventions_number) \
+   #for t in range(t_max[i] + 1)))
 
-   model.addConstrs((quicksum(w[i,t1] for t1 in range(horizon)) == quicksum(z[i,t]*delta_i_t[i][t] for t in range(t_max[i] + 1)) 
-   for i in range(interventions_number)))
+   #model.addConstrs((quicksum(w[i,t1] for t1 in range(horizon)) == quicksum(z[i,t]*delta_i_t[i][t] for t in range(t_max[i] + 1)) 
+   #for i in range(interventions_number)))
     
    
    # 4. Fix the objective
@@ -130,9 +132,9 @@ class ExactSolvers:
           w = mathematical_model.getVarByName("w["+str(i)+","+str(t)+"]")
           if w.X != 0:
             int_json_number = interventions_real_number[i]
-            print(w.Varname,w.X) #Show the details of the corresponding w
-            print("Intervention number in the json file :",int_json_number)
-            print("    ")
+            #print(w.Varname,w.X) #Show the details of the corresponding w
+            #print("Intervention number in the json file :",int_json_number)
+            #print("    ")
             f.write("w["+str(i)+","+str(t)+"] = 1 Intervention in json = "+str(int_json_number)+"\n")
       
       f.close()

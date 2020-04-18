@@ -111,18 +111,21 @@ class ExactSolvers:
     
     f = open(output_path,"w")
     try:
+      list_interventions_horizon = list()
       for i in range(interventions_number):
         for t in range(horizon):
           z = mathematical_model.getVarByName("z["+str(i)+","+str(t)+"]")
           if z.X != 0:
             int_json_number = interventions_real_number[i]
             f.write("Intervention_"+str(int_json_number)+" "+str(t+1)+"\n")
-    
+            list_interventions_horizon.append([int_json_number,t + 1])
+      
+      return list_interventions_horizon
+
     except AttributeError:
       print("Specefied attribute dosesn't existe")
 
     f.close()
-    return 0
     
   def show_w_values(self,mathematical_model,interventions_number,horizon,interventions_real_number,output_path):
     
@@ -144,7 +147,26 @@ class ExactSolvers:
     except AttributeError:
       print("Specefied attribute dosesn't existe")
 
-
-
+  def gantt_diagram(self,list_interventions_horizon,interventions_real_number,delta_i_t,gantt_path):
+    #The Gantt diagram has three parameters 
+    # curve len. corresponds to the y2 - y1 
+    # size of text 
+    # position of text: actually set to (start time - 1, int_model_number)
+    try:
+      fig = plt.figure()
+      plt.rcParams.update({'font.size': 5})
+      for index in range(len(list_interventions_horizon)):
+        int_json_number = list_interventions_horizon[index][0]  #The number of the intervention in the json file  
+        int_model_number = interventions_real_number.index(int_json_number)  #The number which corresponds to the 
+        #intervention number during the execution. between [0 - I-1]
+        start_time = list_interventions_horizon[index][1] #The period on which the intervention starts. between [1 - T]
+        time_ = delta_i_t[int_model_number][start_time - 1] #Delta[i,t]
+        #plt.fill_between(range(start_time, start_time + time_+1), y1 = int_json_number, y2 = int_json_number + 0.5, color='blue', alpha = 0.5)
+        plt.fill_between(range(start_time, start_time + time_+1), y1 = int_model_number, y2 = int_model_number + 0.5, color='blue', alpha = 0.5)
+        plt.text(start_time - 1,int_model_number, "I"+str(int_json_number))
+      plt.show()
+      #plt.savefig(gantt_path)
+    except :
+      print("Error")
 
     

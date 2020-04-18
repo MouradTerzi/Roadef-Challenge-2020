@@ -60,15 +60,17 @@ def set_A_instances_resolution(instance_path,instance_number):
 
   #Create the output txt file 
   output_path = 'Output_txt_files/SetA_'+instance_number+'_output_file'
-  exact_solver.output_file_creation(model,instance.interventions_real_number,output_path,interventions_number,horizon)
+  list_interventions_horizon = exact_solver.output_file_creation(model,instance.interventions_real_number,output_path,interventions_number,horizon)
   
   #Show w values 
   output_w_path = "Output_w_files/SetA_"+instance_number+'_w_values'
   exact_solver.show_w_values(model,interventions_number,horizon,instance.interventions_real_number,output_w_path)
+  gantt_path = "Gantt_diagrams/SetA_"+instance_number+'.jpg'
+  exact_solver.gantt_diagram(list_interventions_horizon,instance.interventions_real_number, delta_i_t,gantt_path)
   return 0
 
 if __name__ == "__main__":
   
-  instance_path = 'Instances/Set_A/A_10.json'
-  set_A_instances_resolution(instance_path,'10')
+  instance_path = 'Instances/Set_A/A_07.json'
+  set_A_instances_resolution(instance_path,'07')
   #show_instance_details(instance_path)

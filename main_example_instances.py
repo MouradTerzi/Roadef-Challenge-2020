@@ -69,7 +69,8 @@ def example_one_resolution():
   exact_solver.instance_resolution(model)
   #Create the output txt file
   output_path = 'Output_txt_files/example_1'
-  exact_solver.output_file_creation(model,[1,2,3],output_path,interventions_number,horizon)
+  list_interventions_horizon = exact_solver.output_file_creation(model,[4,5,6],output_path,interventions_number,horizon)
+  exact_solver.gantt_diagram(list_interventions_horizon,[4,5,6],delta_i_t," ")
   return 0
 
 
@@ -142,5 +143,5 @@ def example_two_resolution():
 
 if __name__ =="__main__":
   example_one_resolution()
-  example_two_resolution()
+  #example_two_resolution()
   

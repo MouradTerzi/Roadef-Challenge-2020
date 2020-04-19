@@ -21,7 +21,10 @@ class ExactSolvers:
    risk_bar_t = model.addVars(horizon,vtype = GRB.CONTINUOUS, name="risk_bar_t")
    q_t = model.addVars(horizon,vtype = GRB.CONTINUOUS, name ="q_t")
    excess = model.addVars(horizon,vtype = GRB.CONTINUOUS, name = "excess")
-   
+   obj1 = model.addVar(vtype = GRB.CONTINUOUS, name = "obj1")
+   obj2=  model.addVar(vtype = GRB.CONTINUOUS, name = "obj2")
+       # Create variables
+ 
    #3. Add constraints
    
    model.addConstrs((quicksum(z[i,t] for t in range(t_max[i] + 1)) == 1 for i in range(interventions_number)))
@@ -68,15 +71,11 @@ class ExactSolvers:
    model.addConstrs(excess[t] >= 0 for t in range(horizon))
    model.addConstrs(excess[t] >= q_t[t] - risk_bar_t[t] for t in range(horizon))
 
-   #model.addConstrs((quicksum(w[i,t1] for t1 in range(t, t + delta_i_t[i][t])) >= z[i,t]*(delta_i_t[i][t]) for i in range(interventions_number) \
-   #for t in range(t_max[i] + 1)))
-
-   #model.addConstrs((quicksum(w[i,t1] for t1 in range(horizon)) == quicksum(z[i,t]*delta_i_t[i][t] for t in range(t_max[i] + 1)) 
-   #for i in range(interventions_number)))
-    
+   model.addConstr(obj1 == quicksum(risk_bar_t[t] for t in range(horizon))*(1/horizon) )
+   model.addConstr(obj2 == quicksum(excess[t] for t in range(horizon))*(1/horizon))
+   
    # 4. Fix the objective
-   obj = alpha*quicksum(risk_bar_t[t] for t in range(horizon))*(1/horizon) + \
-   (1 - alpha)*(quicksum(excess[t] for t in range(horizon))*(1/horizon))
+   obj = alpha*obj1 +  (1 - alpha)*obj2
 
    model.setObjective(obj,GRB.MINIMIZE)
    
@@ -94,7 +93,7 @@ class ExactSolvers:
     
     #Call the optimizer algorithm
     mathematical_model.optimize()
-    """
+    '''
     try:
       for v in mathematical_model.getVars():
         if v.X != 0:
@@ -104,7 +103,7 @@ class ExactSolvers:
     except : 
       print("Instance resolution failed !!!")
       return -1
-    """
+    '''
   
   def output_file_creation(self,mathematical_model,interventions_real_number,output_path,interventions_number,horizon):
     

@@ -59,7 +59,7 @@ class Reader:
     
     if "Interventions" in content:
       for key in content["Interventions"].keys():
-        instance.interventions_real_number.append(int(key[13:]))
+        instance.interventions_json_number.append(int(key[13:]))
         instance.delta_i_t.append(list(map(int,content["Interventions"][key]["Delta"])))
         instance.t_max.append(int(content["Interventions"][key]["tmax"])-1)
       
@@ -123,7 +123,7 @@ class Reader:
     
       for intervention in content["Interventions"].keys():
         intervention_number_json = int(intervention[13:]) #Get the number of the intervention as defined in the json file
-        int_ = instance.interventions_real_number.index(intervention_number_json) #int_ corresponds to the number in the table
+        int_ = instance.interventions_json_number.index(intervention_number_json) #int_ corresponds to the number in the table
         #interventions_real_number. int_ will be used in the instance resolution 
         for resource in content["Interventions"][intervention]["workload"].keys():
           #Get the number of the resource. res_ will be used in the instance resolution 
@@ -170,8 +170,8 @@ class Reader:
       for key in content["Exclusions"].keys():
         intervention_1_number_json = int(content["Exclusions"][key][0][13:])
         intervention_2_number_json = int(content["Exclusions"][key][1][13:])
-        int_1 = instance.interventions_real_number.index(intervention_1_number_json)
-        int_2 = instance.interventions_real_number.index(intervention_2_number_json)
+        int_1 = instance.interventions_json_number.index(intervention_1_number_json)
+        int_2 = instance.interventions_json_number.index(intervention_2_number_json)
         if len(instance.seasons[content["Exclusions"][key][2]]) != 0:
           if (int_1,int_2) not in instance.exclusions:
             instance.exclusions[(int_1,int_2)] = instance.seasons[content["Exclusions"][key][2]][:]
@@ -191,7 +191,7 @@ class Reader:
     if "Interventions" in content:
       for intervention in content["Interventions"].keys():
         intervention_number_json = int(intervention[13:]) #Get the number of the intervention as defined in the json file
-        int_ = instance.interventions_real_number.index(intervention_number_json) #int_ corresponds to the number in the table
+        int_ = instance.interventions_json_number.index(intervention_number_json) #int_ corresponds to the number in the table
         #interventions_real_number. int_ will be used in the instance resolution   
         instance.risk_s_i_t_t1[int_] = dict()
         for t in content["Interventions"][intervention]["risk"].keys():

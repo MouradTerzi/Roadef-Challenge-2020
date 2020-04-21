@@ -3,8 +3,10 @@ import os
 import sys 
 
 sys.path.insert(0,'Solvers/')
-import exact_solvers as es 
+sys.path.insert(0,'Outputs/')
 
+import exact_solvers as es 
+import output_file as out_f
 def example_one_resolution():
 
   #1. Declaration of the initial informations about the instance
@@ -28,11 +30,11 @@ def example_one_resolution():
   exclusions_list = {
     (1,2):[0,1,2]
   }
-
+  t_max = [0,2,1]
   list_beta_indexes = list()
   for i in range(interventions_number):
-    for t in range(horizon):
-      for t1 in range(t+1):
+    for t in range(t_max[i] + 1):
+      for t1 in range(delta_i_t[i][t]):
         list_beta_indexes.append((i,t,t1))
   
   r_c_i_t_t1 = {
@@ -60,17 +62,22 @@ def example_one_resolution():
         2: {0:[0,0,0], 1:[0,0,0]}  #t = 2, (t' =0 and t' = 1)
     }
   }
-  t_max = [0,2,1]
+
   exact_solver = es.ExactSolvers()
   #Create the matematical model
-  model = exact_solver.create_mathematical_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
-  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Output_models/example_1.lp',t_max)
+  model = exact_solver.create_mathematical_model_v2(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Outputs/Output_models/example_1.lp',t_max)
+
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
-  #Create the output txt file
-  output_path = 'Output_txt_files/example_1'
-  list_interventions_horizon = exact_solver.output_file_creation(model,[4,5,6],output_path,interventions_number,horizon)
-  exact_solver.gantt_diagram(list_interventions_horizon,[4,5,6],delta_i_t," ")
+
+  #Save the output file (this file corresponds to the input of the checker)
+  output_object = out_f.OutputFilesManaging()
+  output_path = 'Outputs/Output_txt_files/gurobi_exact_solver/example_1'
+  output_object.create_rte_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],output_path)
+
+
+
   return 0
 
 
@@ -97,12 +104,13 @@ def example_two_resolution():
   exclusions_list = {
     (1,2):[0,1,2]
   }
-
-  list_beta_indexes = list()
+  
+  t_max = [0,2,1]
+  list_z_indexes = list()
   for i in range(interventions_number):
-    for t in range(horizon):
-      for t1 in range(t+1):
-        list_beta_indexes.append((i,t,t1))
+    for t in range(t_max[i] + 1):
+      for t1 in range(delta_i_t[i][t]):
+        list_z_indexes.append((i,t,t1))
   
   r_c_i_t_t1 = {
     (0,0): {0:{0:31},1:{0:0},2:{0:8}},
@@ -129,19 +137,23 @@ def example_two_resolution():
         2: {0:[0,0], 1:[0,0]}  #t = 2, (t' =0 and t' = 1), two scenarios
     }
   }
-  t_max = [0,2,1]
+
   exact_solver = es.ExactSolvers()
-  #Create the mathematical model 
-  model = exact_solver.create_mathematical_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
-  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Output_models/example_2.lp',t_max)
+  #Create the matematical model
+  model = exact_solver.create_mathematical_model_v2(interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,completion_time, \
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Outputs/Output_models/example_2.lp',t_max)
+
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
-  output_path = 'Output_txt_files/example_2'
-  exact_solver.output_file_creation(model,[1,2,3],output_path,interventions_number,horizon)
+
+  #Save the output file (this file corresponds to the input of the checker)
+  output_object = out_f.OutputFilesManaging()
+  output_path = 'Outputs/Output_txt_files/gurobi_exact_solver/example_2'
+  output_object.create_rte_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],output_path)
   return 0
 
 
 if __name__ =="__main__":
-  example_one_resolution()
-  #example_two_resolution()
+  #example_one_resolution()
+  example_two_resolution()
   

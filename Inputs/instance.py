@@ -16,7 +16,7 @@ class Instance:
     self.delta_i_t = list()  #Processing times of each intervention in each time period
     self.l_c_t = list()  #Lower capacities of each resource in each time period
     self.u_c_t = list()  #Higher capacities of each resource in each time period 
-    self.interventions_real_number = list() #This list will contains the real number of the interventions as defined in the 
+    self.interventions_json_number = list() #This list will contains the real number of the interventions as defined in the 
     #.json file 
     self.resources_real_number = list() #This list will contains the real numbers of the resources as defined in the .json file
     #, the number in resources_real_number are sorted. The last number in resources_real_number corresponds to "Resources_control"

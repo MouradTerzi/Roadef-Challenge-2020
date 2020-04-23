@@ -75,8 +75,9 @@ def example_one_resolution():
   output_object = out_f.OutputFilesManaging()
   output_path = 'Outputs/Output_txt_files/gurobi_exact_solver/example_1'
   output_object.create_rte_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],output_path)
-
-
+  
+  output_path = 'Outputs/Output_z_files/example_1'
+  out_file_object.create_z_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],t_max,delta_i_t,output_path)
 
   return 0
 
@@ -150,6 +151,10 @@ def example_two_resolution():
   output_object = out_f.OutputFilesManaging()
   output_path = 'Outputs/Output_txt_files/gurobi_exact_solver/example_2'
   output_object.create_rte_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],output_path)
+
+  output_path = 'Outputs/Output_z_files/example_2'
+  out_file_object.create_z_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],t_max,delta_i_t,output_path)
+
   return 0
 
 

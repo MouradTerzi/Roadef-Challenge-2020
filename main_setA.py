@@ -65,11 +65,12 @@ def set_A_instances_resolution(instance_path,instance_number):
   out_file_object = out_f.OutputFilesManaging()
   output_path = 'Outputs/Output_txt_files/gurobi_exact_solver/SetA/SetA_'+instance_number+'_output_file'
   out_file_object.create_rte_output_file_from_gurobi_results(model,interventions_number,horizon,instance.interventions_json_number,output_path)
-
+  output_path = 'Outputs/Output_z_files/SetA/SetA_'+instance_number+'_z_file.json'
+  out_file_object.create_z_output_file_from_gurobi_results(model,interventions_number,horizon,instance.interventions_json_number,t_max,delta_i_t,output_path)
   return 0
 
 if __name__ == "__main__":
   
-  instance_path = 'Instances/Set_A/A_01.json'
-  set_A_instances_resolution(instance_path,'01')
+  instance_path = 'Instances/Set_A/A_09.json'
+  set_A_instances_resolution(instance_path,'09')
   #show_instance_details(instance_path)

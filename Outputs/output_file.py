@@ -29,25 +29,32 @@ class OutputFilesManaging:
       print("Requested attribute doesn't exist in the input mathamatical model !!!")
       return -1 
   
-
-  def create_w_output_file_from_gurobi_results(self,model,interventions,horizon,interventions_json_number,rte_w_path):
+  #f1 will be a json file. The master key of f1 will be the intervention number in the instance
+  #json file. the second key will be t which corresponds to the start time of the intervention.   
+  #the t values start from 0... horizon - 1
+  #t' values start from 0 ... delta[i][t]
+  #t_max corresponds to t_max -1 in the instance json file.
+  def create_z_output_file_from_gurobi_results(self,model,interventions,horizon,interventions_json_number,t_max,delta_i_t,rte_z_path):
     
-    f1 = open(rte_w_path,"w")  #Save ehe time in w[i,t] == 1 and the corresponding intervention json number 
-    f2 = open(rte_w_path+".json","w") #Save the time in which w[i,t] == 1 for each intervention. t in {0, .., horizon - 1}
-    w_dict = dict()
+    f = open(rte_z_path,"w") 
+    z_dict = dict()
     try:
       for i in range(interventions):
         int_json_number = interventions_json_number[i]
-        w_dict[int_json_number] = list()
-        for t in range(horizon):
-          w = model.getVarByName("w["+str(i)+","+str(t)+"]")
-          if w.X != 0:
-            f1.write("w["+str(i)+","+str(t)+"] = 1 , intervention in json :"+str(int_json_number)+"\n")
-            w_dict[int_json_number].append(t)
-
-      json.dump(w_dict,f2)
-      f1.close()
-      f2.close()
+        z_dict[int_json_number] = dict()
+        for t in range(t_max[i] + 1):
+          for t1 in range(delta_i_t[i][t]):
+            z = model.getVarByName("z["+str(i)+","+str(t)+","+str(t1)+"]")
+            if z.X != 0:
+              if t not in z_dict[int_json_number].keys():
+                z_dict[int_json_number][t] = list()
+            
+              z_dict[int_json_number][t].append(t1)
+ 
+          
+      json.dump(z_dict,f)
+      f.close()
+    
       return 0
 
     except AttributeError:

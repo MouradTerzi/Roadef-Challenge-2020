@@ -65,12 +65,12 @@ def example_one_resolution():
 
   exact_solver = es.ExactSolvers()
   #Create the matematical model
-  model = exact_solver.create_mathematical_model_v2(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
-  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,10,'Outputs/Output_models/example_1.lp',t_max)
-
+  model = exact_solver.create_mathematical_compact_model(interventions_number,resources_number,horizon,list_beta_indexes,scenarios,alpha,tau,completion_time, \
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,'Outputs/Output_models/example_1.lp',t_max)
+  
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
-
+  """
   #Save the output file (this file corresponds to the input of the checker)
   output_object = out_f.OutputFilesManaging()
   output_path = 'Outputs/Output_txt_files/gurobi_exact_solver/example_1'
@@ -78,7 +78,7 @@ def example_one_resolution():
   
   output_path = 'Outputs/Output_z_files/example_1'
   out_file_object.create_z_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],t_max,delta_i_t,output_path)
-
+  """
   return 0
 
 
@@ -153,12 +153,12 @@ def example_two_resolution():
   output_object.create_rte_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],output_path)
 
   output_path = 'Outputs/Output_z_files/example_2'
-  out_file_object.create_z_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],t_max,delta_i_t,output_path)
+  out_object.create_z_output_file_from_gurobi_results(model,interventions_number,horizon,[1,2,3],t_max,delta_i_t,output_path)
 
   return 0
 
 
 if __name__ =="__main__":
-  #example_one_resolution()
-  example_two_resolution()
+  example_one_resolution()
+  #example_two_resolution()
   

@@ -162,6 +162,68 @@ class ExactSolvers:
 
     return model
 
+  def create_mathematical_compact_model(self,interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, \
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,model_path,t_max):
+    
+    #1. Creation of the model
+    model = Model('Roadef challenge compact model with only x variable .......')
+
+    #2. Add the variables
+    x = model.addVars(interventions_number,horizon,vtype = GRB.BINARY,name = "x")
+    y = model.addVars(max(scenarios),horizon,vtype = GRB.BINARY,name = "y")
+    
+    g_s_t = model.addVars(max(scenarios),horizon,vtype = GRB.CONTINUOUS, name = "g_s_t")
+    g_t_bar = model.addVars(horizon,vtype = GRB.CONTINUOUS, name="g_t_bar")
+    q_t = model.addVars(horizon,vtype = GRB.CONTINUOUS, name ="q_t")
+    excess = model.addVars(horizon,vtype = GRB.CONTINUOUS, name = "excess")
+    obj1 = model.addVar(vtype = GRB.CONTINUOUS, name = "obj1")
+    obj2 = model.addVar(vtype = GRB.CONTINUOUS, name = "obj2")
+
+    #3. Add constraints 
+    model.addConstrs((quicksum(x[i,t] for t in range(t_max[i] + 1)) == 1 for i in range(interventions_number)))
+    model.addConstrs(x[i,t] == 0 for i in range(interventions_number) for t in range(t_max[i] + 1,horizon))
+    model.addConstrs((x[i, t]*(t + delta_i_t[i][t]) <= horizon for i in range(interventions_number) for t in range(t_max[i] + 1))) 
+    model.addConstrs((x[i,t]*(t + 1) <= t_max[i] + 1 for i in range(interventions_number) for t in range(t_max[i] + 1)))
+
+    model.addConstrs((quicksum(x[i,h] for h in range(t+1) if delta_i_t[i][h] + h > t) + \
+    quicksum(x[j,h] for h in range(t+1) if delta_i_t[j][h] + h > t) <= 1 for (i,j) in exclusions_list.keys() \
+    for t in exclusions_list[(i,j)]))
+
+    model.addConstrs((quicksum(x[i,h]*r_c_i_t_t1[(i,c)][t][h] for i in range(interventions_number)  
+    if (i,c) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,c)] for h in r_c_i_t_t1[(i,c)][t].keys()) >= l_c_t[c][t] 
+    for c in range(resources_number) for t in range(horizon)))
+
+    model.addConstrs((quicksum(x[i,h]*r_c_i_t_t1[(i,c)][t][h] for i in range(interventions_number)  
+    if (i,c) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,c)] for h in r_c_i_t_t1[(i,c)][t].keys()) <= u_c_t[c][t] 
+    for c in range(resources_number) for t in range(horizon)))
+
+    model.addConstrs((g_s_t[s,t] == quicksum(x[i,h]*risk_s_i_t_t1[i][t][h][s] for i in range(interventions_number)
+    for h in risk_s_i_t_t1[i][t].keys() if t in risk_s_i_t_t1 ) for t in range(horizon) for s in range(scenarios[t])))
+    
+    model.addConstrs((g_t_bar[t] == quicksum(g_s_t[s,t] for s in
+    range(scenarios[t]))*(1/scenarios[t]) for t in range(horizon)))
+
+    model.addConstrs((quicksum(y[s,t] for s in range(scenarios[t])) >= tau*scenarios[t] for t in range(horizon)))
+    model.addConstrs((quicksum(y[s,t] for s in range(scenarios[t])) <= tau*scenarios[t] +1 for t in range(horizon)))
+    model.addConstrs((q_t[t] >= g_s_t[s,t]*y[s,t] for t in range(horizon) for s in range(scenarios[t])))
+    model.addConstrs(excess[t] >= q_t[t] - g_t_bar[t] for t in range(horizon))
+    model.addConstrs(excess[t] >= 0 for t in range(horizon))
+    
+    # 4. Fix the objective
+    model.addConstr(obj1 == quicksum(g_t_bar[t] for t in range(horizon))*(1/horizon) )
+    model.addConstr(obj2 == quicksum(excess[t] for t in range(horizon))*(1/horizon))
+    
+    obj = alpha*obj1 +  (1 - alpha)*obj2
+    model.setObjective(obj,GRB.MINIMIZE)
+    
+    #5. Upadate the timelimit value according to the input computation time
+    #computation time is specified in minutes
+    #timelimit parameter of the model is specified in seconds
+    model.Params.timelimit = computation_time*60
+    # 6. Save the model 
+    model.write(model_path)
+    return model
+
   def instance_resolution(self,mathematical_model): 
     
     #Call the optimizer algorithm

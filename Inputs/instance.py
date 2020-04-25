@@ -1,6 +1,10 @@
 #-*- coding: utf-8 -*-
 import os
 import sys 
+import numpy as np 
+from openpyxl import Workbook
+import pandas as pd 
+from collections import Counter
 
 class Instance:
    
@@ -57,10 +61,10 @@ class Instance:
     print("              ##################################################################################################################")
     print("               ")
     print("     Interventions total number : ", self.interventions_number)
-    print("     Numbers of Interventions according to the .json file :", self.interventions_real_number)
+    print("     Numbers of Interventions according to the .json file :", self.interventions_json_number)
     print("     Processing times of the interventions :")
     for i in range(len(self.delta_i_t)):
-      print("      ",self.interventions_real_number[i],self.delta_i_t[i])
+      print("      ",self.interventions_json_number[i],self.delta_i_t[i])
     
     print("    ")
     return 0
@@ -99,7 +103,7 @@ class Instance:
     print("              ##################################################################################################################")
     print("               ")
     for key in self.r_c_i_t_t1.keys():
-      int_number = self.interventions_real_number[key[0]]
+      int_number = self.interventions_json_number[key[0]]
       resource_number = self.resources_real_number[key[1]] + 1
       print("                    &&&&&&&&&&&&&&&&&      [Intervention , Resource] = [",int_number,",",resource_number,"] &&&&&&&&&&&&&&&&&&&&&&")
       print("     ",self.r_c_i_t_t1[key])
@@ -119,8 +123,8 @@ class Instance:
     print("               ")
     for key in self.exclusions.keys():
       print(key)
-      int_1_number = self.interventions_real_number[key[0]]
-      int_2_number = self.interventions_real_number[key[1]] 
+      int_1_number = self.interventions_json_number[key[0]]
+      int_2_number = self.interventions_json_number[key[1]] 
       print("                 &&&&&&&&&&&&&&&&&    [Intervention 1, Intervention 2] = [",int_1_number,",",int_2_number,"] &&&&&&&&&&&&&&&&&&&&&&")
       print("      ",self.exclusions[key])
       
@@ -138,12 +142,78 @@ class Instance:
     print("              ##################################################################################################################")
     print("               ")
     for i in self.risk_s_i_t_t1.keys():
-      int_number = self.interventions_real_number[i]
+      int_number = self.interventions_json_number[i]
       print("                             &&&&&&&&&&&&&&&&&    Intervention", int_number, "   &&&&&&&&&&&&&&&&&&&&&&")
       for t in self.risk_s_i_t_t1[i].keys():
         print("[t = ",t,"]",self.risk_s_i_t_t1[i][t])
     
     return 0
+            
+  def get_exclusions_details(self,seasons,exclusions_xls_path):
+    
+    wb = Workbook()
+    for season in seasons:
+      sheet = wb.create_sheet(season)
+     
+      if season in self.seasons:
+        sheet.append(["Horizon"," ",self.horizon])
+        sheet.append(["Instance interventions number"," ",self.interventions_number])
+        sheet.append(["Season"," ",season])
+        sheet.append(["Periods"," ",len(self.seasons[season])])
+        sheet.append(["Periods number"," ",] + self.seasons[season])
         
+        #Get the number of the intervention in exclusion at the current season 
+        inter_in_exclusion = list()
+        key_in_exclusions = list()
+        for i1,i2 in self.exclusions.keys():
+          for t in self.exclusions[(i1,i2)]:
+            if t in self.seasons[season]: #i1 and i2 are in exclusion in the current season
+              inter_in_exclusion.append(i1)
+              inter_in_exclusion.append(i2)
+              key_in_exclusions.append((i1,i2))
+              break
+        
+        #Get for each intervention its number of exclusion in the current season 
+        count = Counter(inter_in_exclusion)
+        sheet.append(["Total number of interventions in exclusion"," ",len(count.keys())])  
+        sheet.append(["Instance total exclusion number"," ",len(self.exclusions.keys())])
+        sheet.append([season+" total exclusion number"," ",len(key_in_exclusions)]) 
+        sheet.append([" "]) 
+        count = sorted(count.items(),key = lambda x:x[1], reverse = True)
+        sheet.append(["Intervention"," ","Total execlusions"])
+
+        for e in count:
+          int_json_number = self.interventions_json_number[e[0]]
+          sheet.append(["I_"+str(int_json_number)," ",e[1]])
+        
+        sheet.append([" "]) 
+
+        #Create the exclusions matrix 
+        interventions_set = np.unique(inter_in_exclusion)
+        list_interventions_json_number = [" "]
+        for i in range(len(interventions_set)):
+          list_interventions_json_number.append("I_"+str(self.interventions_json_number[interventions_set[i]]))
+       
+        sheet.append(["Exclusion matrix"])
+        sheet.append(list_interventions_json_number)
+        
+        for i1 in range(len(interventions_set)):
+          intervention_line = ["I_"+str(self.interventions_json_number[interventions_set[i1]])]
+          for i2 in range(len(interventions_set)):
+            if (interventions_set[i1],interventions_set[i2]) in key_in_exclusions or (interventions_set[i2],interventions_set[i1]) in key_in_exclusions:
+              intervention_line.append(1)
+            else:
+              intervention_line.append(" ")
+          
+          sheet.append(intervention_line)
+
+    wb.save(exclusions_xls_path)
+    return 0
+
+      
+       
+
 
   
+
+

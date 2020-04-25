@@ -11,12 +11,16 @@ import exact_solvers as es
 import output_file as out_f 
 import data_preprocessing as dp
 
-def show_instance_details(instance_path):
+def show_instance_details(instance_path,instance_number):
 
   reader = rd.Reader()
   instance = reader.read_instance(instance_path)
-  instance.show_basic_details()
-  print(instance.t_max)
+  exclusions_xls_path = 'Inputs/instances_details/SetA_instance_'+instance_number+"_exclusions_.xls"
+  #instance.show_basic_details()
+  instance.get_exclusions_details(list(instance.seasons.keys()),exclusions_xls_path)
+  #instance.show_exclusions_details()
+  #print(instance.seasons)
+  #instance.show_basic_details()
   #instance.show_interventions_details()
   #instance.show_resources_details()
   #instance.show_r_c_i_t_t1_details()
@@ -140,7 +144,10 @@ def set_A_instances_heuristic_2_resolution(interventions_number,resources_number
 
 if __name__ == "__main__":
   
-  instance_path = 'Instances/Set_A/A_09.json'
+  instance_path = 'Instances/Set_A/A_07.json'
+  show_instance_details(instance_path,"07")
+  
+  """
   interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, delta_i_t,l_c_t,\
   u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,t_max,interventions_json_number,instance = read_instance(instance_path)
   
@@ -149,4 +156,4 @@ if __name__ == "__main__":
   
   set_A_instances_heuristic_2_resolution(interventions_number,resources_number,horizon,list_z_indexes,alpha,tau,computation_time, \
   delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,t_max,interventions_json_number,'09',instance)
-  
+  """

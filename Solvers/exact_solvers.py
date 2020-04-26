@@ -141,7 +141,11 @@ class ExactSolvers:
     for s in range(scenarios[t]) for u in range(scenarios[t]) if s != u))
 
     model.addConstrs((q_t[t] >= risk_s_t[s,t] - M*(1 - y[s,t]) for t in range(horizon) for s in range(scenarios[t])))
+	
     model.addConstrs(excess[t] >= 0 for t in range(horizon))
+	
+	
+   
     model.addConstrs(excess[t] >= q_t[t] - risk_bar_t[t] for t in range(horizon))
     
     model.addConstr(obj1 == quicksum(risk_bar_t[t] for t in range(horizon))*(1/horizon) )
@@ -163,7 +167,7 @@ class ExactSolvers:
     return model
 
   def create_mathematical_compact_model(self,interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, \
-  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,model_path,t_max):
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,M,model_path,t_max):
     
     #1. Creation of the model
     model = Model('Roadef challenge compact model with only x variable .......')
@@ -208,9 +212,13 @@ class ExactSolvers:
 
     model.addConstrs((quicksum(y[s,t] for s in range(scenarios[t])) >= tau*scenarios[t] for t in range(horizon)))
     model.addConstrs((quicksum(y[s,t] for s in range(scenarios[t])) <= tau*scenarios[t] +1 for t in range(horizon)))
-    model.addConstrs((q_t[t] >= g_s_t[s,t]*y[s,t] for t in range(horizon) for s in range(scenarios[t])))
+    model.addConstrs((q_t[t] >= g_s_t[s,t]-M*(1-y[s,t]) for t in range(horizon) for s in range(scenarios[t])))
+    #model.addConstrs((q_t[t] <= g_s_t[s,t]+M*y[s,t] for t in range(horizon) for s in range(scenarios[t])))
     model.addConstrs(excess[t] >= q_t[t] - g_t_bar[t] for t in range(horizon))
-    #model.addConstrs(excess[t] >= 0 for t in range(horizon))
+    model.addConstrs(excess[t] >= 0 for t in range(horizon))
+
+
+    
     
     # 4. Fix the objective
     model.addConstr(obj1 == quicksum(g_t_bar[t] for t in range(horizon))*(1/horizon) )

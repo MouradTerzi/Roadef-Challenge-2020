@@ -65,10 +65,11 @@ def set_A_instances_exact_resolution(interventions_number,resources_number,horiz
   delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,t_max,interventions_json_number,instance_number):
   
   #Create the mathematical model 
+  M = 1000000
   model_path = 'Outputs/Output_models/gurobi_exact_solver/SetA/setA_instance_'+instance_number+'.lp'
   exact_solver = es.ExactSolvers()
   model = exact_solver.create_mathematical_compact_model(interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, \
-  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,model_path,t_max)
+  delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,M,model_path,t_max)
 
   #Resolution of the instance at hand 
   exact_solver.instance_resolution(model)
@@ -143,14 +144,14 @@ def set_A_instances_heuristic_2_resolution(interventions_number,resources_number
 
 if __name__ == "__main__":
   
-  instance_path = 'Instances/Set_A/A_12.json'
-  #show_instance_details(instance_path,"10")
+  instance_path = 'Instances/Set_A/A_08.json'
+  #show_instance_details(instance_path,"08")
   
   interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, delta_i_t,l_c_t,\
   u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,t_max,interventions_json_number,instance = read_instance(instance_path)
   
   set_A_instances_exact_resolution(interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, delta_i_t,l_c_t,\
-  u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,t_max,interventions_json_number,'12')
+  u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,t_max,interventions_json_number,'08')
   """
   #set_A_instances_heuristic_2_resolution(interventions_number,resources_number,horizon,list_z_indexes,alpha,tau,computation_time, \
   #delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,t_max,interventions_json_number,'09',instance)

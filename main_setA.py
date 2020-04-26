@@ -143,14 +143,14 @@ def set_A_instances_heuristic_2_resolution(interventions_number,resources_number
 
 if __name__ == "__main__":
   
-  instance_path = 'Instances/Set_A/A_09.json'
-  show_instance_details(instance_path,"09")
+  instance_path = 'Instances/Set_A/A_12.json'
+  #show_instance_details(instance_path,"10")
   
   interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, delta_i_t,l_c_t,\
   u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,t_max,interventions_json_number,instance = read_instance(instance_path)
   
   set_A_instances_exact_resolution(interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, delta_i_t,l_c_t,\
-  u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,t_max,interventions_json_number,'09')
+  u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,t_max,interventions_json_number,'12')
   """
   #set_A_instances_heuristic_2_resolution(interventions_number,resources_number,horizon,list_z_indexes,alpha,tau,computation_time, \
   #delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,t_max,interventions_json_number,'09',instance)

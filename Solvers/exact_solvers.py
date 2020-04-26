@@ -190,15 +190,18 @@ class ExactSolvers:
     for t in exclusions_list[(i,j)]))
 
     model.addConstrs((quicksum(x[i,h]*r_c_i_t_t1[(i,c)][t][h] for i in range(interventions_number)  
-    if (i,c) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,c)] for h in r_c_i_t_t1[(i,c)][t].keys()) >= l_c_t[c][t] 
+    for h in range(t_max[i] + 1) if (i,c) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,c)] 
+    and h in r_c_i_t_t1[(i,c)][t]) >= l_c_t[c][t] 
     for c in range(resources_number) for t in range(horizon)))
 
     model.addConstrs((quicksum(x[i,h]*r_c_i_t_t1[(i,c)][t][h] for i in range(interventions_number)  
-    if (i,c) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,c)] for h in r_c_i_t_t1[(i,c)][t].keys()) <= u_c_t[c][t] 
+    for h in range(t_max[i] + 1) if (i,c) in r_c_i_t_t1 and t in r_c_i_t_t1[(i,c)] 
+    and h in r_c_i_t_t1[(i,c)][t]) <= u_c_t[c][t] 
     for c in range(resources_number) for t in range(horizon)))
 
     model.addConstrs((g_s_t[s,t] == quicksum(x[i,h]*risk_s_i_t_t1[i][t][h][s] for i in range(interventions_number)
-    for h in risk_s_i_t_t1[i][t].keys() if t in risk_s_i_t_t1 ) for t in range(horizon) for s in range(scenarios[t])))
+    for h in range(t_max[i] + 1) if t in risk_s_i_t_t1[i]  and h in risk_s_i_t_t1[i][t]) 
+    for t in range(horizon) for s in range(scenarios[t])))
     
     model.addConstrs((g_t_bar[t] == quicksum(g_s_t[s,t] for s in
     range(scenarios[t]))*(1/scenarios[t]) for t in range(horizon)))
@@ -207,7 +210,7 @@ class ExactSolvers:
     model.addConstrs((quicksum(y[s,t] for s in range(scenarios[t])) <= tau*scenarios[t] +1 for t in range(horizon)))
     model.addConstrs((q_t[t] >= g_s_t[s,t]*y[s,t] for t in range(horizon) for s in range(scenarios[t])))
     model.addConstrs(excess[t] >= q_t[t] - g_t_bar[t] for t in range(horizon))
-    model.addConstrs(excess[t] >= 0 for t in range(horizon))
+    #model.addConstrs(excess[t] >= 0 for t in range(horizon))
     
     # 4. Fix the objective
     model.addConstr(obj1 == quicksum(g_t_bar[t] for t in range(horizon))*(1/horizon) )

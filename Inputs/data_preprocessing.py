@@ -66,7 +66,6 @@ class DataPreProcessing:
     instance.scenarios_number = [1]*len(instance.scenarios_number)
     return 
 
-  
   def reduce_scenarios_using_risk_s_t_i_t_t1_tau(self,instance,tau):
 
     for i in range(instance.interventions_number):
@@ -77,7 +76,7 @@ class DataPreProcessing:
             
             #Get the scenario that corresponds to the quantile (tau)
             if int(tau*instance.scenarios_number[t]) == tau*instance.scenarios_number[t]:
-             pos = tau*instance.scenarios_number[t] - 1
+             pos = int(tau*instance.scenarios_number[t] - 1)
             else:
               pos = int(tau*instance.scenarios_number[t])
         
@@ -85,4 +84,24 @@ class DataPreProcessing:
             instance.risk_s_i_t_t1[i][t][t1] = instance.risk_s_i_t_t1[i][t][t1][:1]
         
     instance.scenarios_number = [1]*len(instance.scenarios_number)
+    return 
+
+  def select_sub_set_scenarios_using_risk_s_t_i_t_t1(self,instance,scenarios_to_select):
+
+    for i in range(instance.interventions_number):
+      for t in range(instance.horizon):
+        for t1 in range(t + 1):
+          if t in instance.risk_s_i_t_t1[i] and t1 in instance.risk_s_i_t_t1[i][t]:
+            #Check if the current time 't' has more than scenarios_to_select 
+            if len(instance.risk_s_i_t_t1[i][t][t1]) > scenarios_to_select: 
+              instance.risk_s_i_t_t1[i][t][t1] = sorted(instance.risk_s_i_t_t1[i][t][t1],reverse = False)
+              old_t_scenarios = len(instance.risk_s_i_t_t1[i][t][t1])
+              step,pos = int(old_t_scenarios/scenarios_to_select),0
+              while (len(instance.risk_s_i_t_t1[i][t][t1]) - old_t_scenarios) < scenarios_to_select:
+                instance.risk_s_i_t_t1[i][t][t1].append(instance.risk_s_i_t_t1[i][t][t1][pos])
+                pos += step
+              
+              instance.risk_s_i_t_t1[i][t][t1] = instance.risk_s_i_t_t1[i][t][t1][old_t_scenarios :]
+              instance.scenarios_number[t] = scenarios_to_select #Update the scenario number of time period 't'
+              
     return 

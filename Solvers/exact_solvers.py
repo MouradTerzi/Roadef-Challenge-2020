@@ -166,12 +166,12 @@ class ExactSolvers:
 
     return model
 
-  def create_mathematical_compact_model(self,interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, \
+  def create_mathematical_compact_linear_model(self,interventions_number,resources_number,horizon,list_z_indexes,scenarios,alpha,tau,computation_time, \
   delta_i_t,l_c_t,u_c_t,exclusions_list,r_c_i_t_t1,risk_s_i_t_t1,M,model_path,t_max):
     
     #1. Creation of the model
     model = Model('Roadef challenge compact model with only x variable .......')
-
+    print("compact linear model .....")
     #2. Add the variables
     x = model.addVars(interventions_number,horizon,vtype = GRB.BINARY,name = "x")
     y = model.addVars(max(scenarios),horizon,vtype = GRB.BINARY,name = "y")
@@ -217,9 +217,6 @@ class ExactSolvers:
     model.addConstrs(excess[t] >= q_t[t] - g_t_bar[t] for t in range(horizon))
     model.addConstrs(excess[t] >= 0 for t in range(horizon))
 
-
-    
-    
     # 4. Fix the objective
     model.addConstr(obj1 == quicksum(g_t_bar[t] for t in range(horizon))*(1/horizon) )
     model.addConstr(obj2 == quicksum(excess[t] for t in range(horizon))*(1/horizon))

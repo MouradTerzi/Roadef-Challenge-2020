@@ -1,5 +1,6 @@
 import sys 
 import os 
+import numpy as np 
 
 class DataPreProcessing:
 
@@ -73,17 +74,22 @@ class DataPreProcessing:
         for t1 in range(t + 1):
           if t in instance.risk_s_i_t_t1[i] and t1 in instance.risk_s_i_t_t1[i][t]:
             instance.risk_s_i_t_t1[i][t][t1] = sorted(instance.risk_s_i_t_t1[i][t][t1],reverse = False)
-            
-            #Get the scenario that corresponds to the quantile (tau)
-            if int(tau*instance.scenarios_number[t]) == tau*instance.scenarios_number[t]:
-             pos = int(tau*instance.scenarios_number[t] - 1)
-            else:
-              pos = int(tau*instance.scenarios_number[t])
+            if len(instance.risk_s_i_t_t1[i][t][t1]) > 1:
+              #Get the mean value 
+              mean = np.mean(np.array(instance.risk_s_i_t_t1[i][t][t1]))
+
+              #Get the scenario that corresponds to the quantile (tau)
+              if int(tau*instance.scenarios_number[t]) == tau*instance.scenarios_number[t]:
+               pos = int(tau*instance.scenarios_number[t] - 1)
+              else:
+               pos = int(tau*instance.scenarios_number[t])
         
-            instance.risk_s_i_t_t1[i][t][t1].insert(0,instance.risk_s_i_t_t1[i][t][t1][pos])
-            instance.risk_s_i_t_t1[i][t][t1] = instance.risk_s_i_t_t1[i][t][t1][:1]
-        
-    instance.scenarios_number = [1]*len(instance.scenarios_number)
+              instance.risk_s_i_t_t1[i][t][t1].insert(0,instance.risk_s_i_t_t1[i][t][t1][pos])
+              instance.risk_s_i_t_t1[i][t][t1].insert(0,mean)
+              instance.risk_s_i_t_t1[i][t][t1] = instance.risk_s_i_t_t1[i][t][t1][:2]
+              instance.scenarios_number[t] = 2      
+          
+    #instance.scenarios_number = [1]*len(instance.scenarios_number)
     return 
 
   def select_sub_set_scenarios_using_risk_s_t_i_t_t1(self,instance,scenarios_to_select):

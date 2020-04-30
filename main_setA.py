@@ -20,7 +20,9 @@ def show_instance_details(instance_path,instance_number):
   scenarios_to_select = 2
   #instance.show_basic_details()
   #instance.get_exclusions_details(list(instance.seasons.keys()),exclusions_xls_path)
-  dp_object.select_sub_set_scenarios_using_risk_s_t_i_t_t1(instance,scenarios_to_select)
+  print(instance.scenarios_number)
+  dp_object.reduce_scenarios_using_risk_s_t_i_t_t1_tau(instance,instance.tau)
+  print(instance.scenarios_number)
   #instance.show_exclusions_details()
   #print(instance.seasons)
   #instance.show_basic_details()
@@ -91,7 +93,7 @@ def set_A_instances_heuristic_1_resolution(interventions_number,resources_number
   dp_object = dp.DataPreProcessing()
   scenarios_to_select = 2
   dp_object.select_sub_set_scenarios_using_risk_s_t_i_t_t1(instance,scenarios_to_select)
-  #dp_object.reduce_scenarios_using_risk_s_t_i_t_t1_tau(instance,instance.tau)
+  dp_object.reduce_scenarios_using_risk_s_t_i_t_t1_tau(instance,instance.tau)
   #Create the mathematical model 
   M = 1000000 
   model_path = 'Outputs/Output_models/heuristic_h1/SetA/setA_instance_'+instance_number+'.lp'
@@ -145,8 +147,8 @@ def set_A_instances_heuristic_2_resolution(interventions_number,resources_number
   return
 
 def all_instances_execution():
-  list_instances = ['A_01.json','A_07.json','A_08.json','A_09.json']
-  list_instances_number = ['01','07','08','09']
+  list_instances = ['A_07.json'] #,'A_08.json','A_09.json'
+  list_instances_number = ['07']
   for i in range(len(list_instances)):
     instance_path = 'Instances/Set_A/'+list_instances[i]
     instance_number = list_instances_number[i]
@@ -164,3 +166,6 @@ def all_instances_execution():
 if __name__ == "__main__":
 
   all_instances_execution()
+  #instance_path = 'Instances/Set_A/A_07.json'
+  #show_instance_details(instance_path,'07')
+  
